@@ -1,0 +1,96 @@
+﻿@model FoodSpot.Web.ViewModels.Recipes.RecipeInputModel
+@{
+    this.ViewData["Title"] = "Create new recipe";
+}
+
+<div class="jumbotron my-4 rounded shadow text-center text-white">
+    <h1 class="display-4 text-black font-italic"><strong>@this.ViewData["Title"]</strong></h1>
+    <form method="post" enctype="multipart/form-data" class="col-md-6 offset-md-3">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group p-1">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-pen fa-lg"></i></span>
+            <label asp-for="Name" class="font-weight-bold h5"></label>
+            <input asp-for="Name" class="form-control" autocomplete="off"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group p-1">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-book-open fa-lg"></i></span>
+            <label asp-for="Instructions" class="font-weight-bold h5"></label>
+            <textarea asp-for="Instructions" class="form-control" rows="5"></textarea>
+            <span asp-validation-for="Instructions" class="text-danger"></span>
+        </div>
+        <div class="form-group p-1">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-clock fa-lg"></i></span>
+            <label asp-for="PreparationTime" class="font-weight-bold h5"></label>
+            <input asp-for="PreparationTime" class="form-control" />
+            <span asp-validation-for="PreparationTime" class="text-danger"></span>
+        </div>
+        <div class="form-group p-1">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-clock fa-lg"></i></span>
+            <label asp-for="CookingTime" class="font-weight-bold h5"></label>
+            <input asp-for="CookingTime" class="form-control" />
+            <span asp-validation-for="CookingTime" class="text-danger"></span>
+        </div>
+        <div class="form-group p-1">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-utensils fa-lg"></i></i></span>
+            <label asp-for="PortionsCount" class="font-weight-bold h5"></label>
+            <input asp-for="PortionsCount" class="form-control" />
+            <span asp-validation-for="PortionsCount" class="text-danger"></span>
+        </div>
+        <div class="form-group p-1">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-pizza-slice fa-lg"></i></span>
+            <label asp-for="CategoryId" class="font-weight-bold h5"></label>
+            <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories"></select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+        <div class="form-group p-1" id="ingredientsContainer">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-pepper-hot fa-lg"></i></span>
+            <div>
+                <label asp-for="Ingredients" class="font-weight-bold h5"></label>
+            </div>
+            <button id="add" type="button" class="btn btn-primary mb-2">Add</button>
+            <button id="remove" type="button" class="btn btn-danger mb-2">Remove</button>
+        </div>
+        <div class="form-group p-1">
+            <span class="input-group-prepend justify-content-center"><i class="fas fa-image fa-lg"></i></span>
+            <label asp-for="Image" class="control-label font-weight-bold h5"></label>
+            <div class="custom-file">
+                <input asp-for="Image" class="custom-file-input" id="customFile">
+                <label class="custom-file-label" for="customFile">Choose file</label>
+            </div>
+            <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+
+        <div class="row justify-content-center p-3">
+            <input type="submit" class="btn btn-primary btn-lg" value="Create" />
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        var index = 0;
+        $('#add').on('click', function () {
+            var newInputs =
+                $(`<div class='form-group h6 font-weight-bold'><input class='form-control' type='text' name='Ingredients[${index}].IngredientName' placeholder="Name..." autocomplete="off"/><input class='form-control' type='text' name='Ingredients[${index}].Quantity' placeholder="Quantity..." autocomplete="off"/></div>`);
+            $("#ingredientsContainer").append(newInputs);
+            index++;
+        });
+    </script>
+
+    <script>
+        $("#remove").on('click', function () {
+            if ($(".h6").length) {
+                $("#ingredientsContainer").children(".h6").last().remove();
+                index--;
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+}

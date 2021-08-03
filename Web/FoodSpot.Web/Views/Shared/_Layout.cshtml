@@ -1,0 +1,68 @@
+﻿@using FoodSpot.Common
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@this.ViewData["Title"] - @GlobalConstants.SystemName</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-dark border-bottom box-shadow mb-3 fixed-top">
+            <div class="container">
+                <a class="navbar-brand text-white font-italic font-weight-bolder" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-pizza-slice fa-lg"></i> @GlobalConstants.SystemName</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        <li>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Recipes" asp-action="All" asp-route-id="1"><i class="fas fa-book fa-lg"></i> All recipes</a>
+                        </li>
+                        <li>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Recipes" asp-action="Search"><i class="fas fa-search fa-lg"></i> Detailed search</a>
+                        </li>
+                        @if (this.User.Identity.IsAuthenticated)
+                        {
+                            <li>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Recipes" asp-action="Create"><i class="far fa-plus-square fa-lg"></i> Create Recipe</a>
+                            </li>
+                        }
+                        @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="Administration" asp-controller="Recipes" asp-action="Index" asp-route-id="1"><i class="fas fa-cogs fa-lg"></i> Recipes Administration</a>
+                            </li>
+                        }
+                        </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-3">
+            @this.RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer bg-dark text-white text-center">
+        <div class="container">
+            Copyright &copy; @DateTime.Now.Year - @GlobalConstants.SystemName
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js" asp-append-version="true"></script>
+    <script src="~/js/site.min.js" asp-append-version="true"></script>
+    <script src="https://kit.fontawesome.com/89bddd5b6d.js" crossorigin="anonymous"></script>
+    @await this.RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

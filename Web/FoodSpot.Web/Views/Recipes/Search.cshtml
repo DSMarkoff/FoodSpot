@@ -1,0 +1,36 @@
+﻿@model FoodSpot.Web.ViewModels.Ingredients.IngredientListViewModel
+@{
+    this.ViewData["Title"] = "Detailed search";
+    var letters = new List<string>();
+}
+
+<div class="jumbotron my-4 rounded shadow text-white">
+    <h1 class="display-4 text-black font-italic mb-5 text-center"><strong>Ingredients</strong></h1>
+    <form method="get" asp-action="Result" class="col-12">
+        <div class="form-row">
+            @foreach (var ingredient in Model.Ingredients)
+            {
+                var firstLetter = ingredient.Name.Substring(0, 1);
+
+                if (!letters.Any(x => x == firstLetter))
+                {
+            <div class="col-12 mt-5 h1 font-italic">
+                @firstLetter
+            </div>
+
+                    letters.Add(firstLetter);
+                }
+
+                <div class="form-check col-3">
+                    <input id="@ingredient.Id" class="form-check-input" type="checkbox" name="Ingredients" value="@ingredient.Name">
+                    <label class="form-check-label h5">
+                        @ingredient.Name
+                    </label>
+                </div>
+            }
+        </div>
+        <div class="row justify-content-center mt-3">
+            <button class="btn btn-primary btn-lg">Search</button>
+        </div>
+    </form>
+</div>

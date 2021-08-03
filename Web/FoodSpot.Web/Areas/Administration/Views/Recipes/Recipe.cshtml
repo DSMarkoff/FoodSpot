@@ -1,0 +1,188 @@
+﻿@using FoodSpot.Common
+@model FoodSpot.Web.ViewModels.Recipes.SingleRecipeViewModel
+@{
+    this.ViewData["Title"] = Model.Name;
+}
+
+
+<!-- Page Content -->
+<div class="container">
+
+    <div class="card mt-3">
+        <img class="card-img-top img-fluid" src="~/images/@Model.Image"
+             asp-append-version="true" alt="@Model.Name">
+        <div class="card-body">
+            <div class="text-right"><i class="fas fa-user-alt fa-lg"></i> @Model.UserUserName <i class="fas fa-calendar-alt fa-lg"></i> @Model.CreatedOn</div>            
+            <h3 class="card-title text-center p-3 font-italic">
+                <img src="~/images/@Model.CategoryImage" style="width:50px; height:auto" /> @Model.Name
+            </h3>
+            <span id="voteStars" class="h6">Rating: </span>
+            <span id="averageVote" class="h6">@Model.AverageVote.ToString("0.0")</span>
+            <div class="row text-center p-5">
+                <div class="col h6"><i class="far fa-clock fa-lg"></i> Preparation time: @Model.PreparationTime minutes</div>
+                <div class="col h6"><i class="far fa-clock fa-lg"></i> Cooking time: @Model.CookingTime minutes</div>
+                <div class="col h6"><i class="fas fa-utensils fa-lg"></i> Portions: @Model.PortionsCount</div>
+            </div>
+            <p class="card-text lead pb-3">@Model.Instructions</p>
+            <table class="table table-hover text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Ingredient</th>
+                        <th scope="col">Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 1; i <= Model.RecipeIngredients.Count(); i++)
+                    {
+                        <tr>
+                            <th scope="row">@i</th>
+                            <td>@Model.RecipeIngredients.ToArray()[i - 1].IngredientName</td>
+                            <td>@Model.RecipeIngredients.ToArray()[i - 1].Quantity</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- /.card -->
+
+    <div class="card card-outline-secondary my-4">
+        <div class="card-header h6">
+            <i class="fas fa-comments fa-lg"></i> Comments
+        </div>
+        <div id="comments" class="card-body">
+            @foreach (var comment in Model.Comments)
+            {
+                <hr>
+                <p>@comment.Text</p>
+                <small class="text-muted"><i class="fas fa-user-circle fa-lg"></i> @comment.UserUserName <i class="fas fa-calendar-alt fa-lg"></i> @comment.CreatedOnDate <i class="fas fa-clock fa-lg"></i> @comment.CreatedOnTime</small>
+                <hr>
+            }
+        </div>
+        @if (this.User.Identity.IsAuthenticated)
+        {
+            <form method="post" class="mb-4 p-3">
+                <div class="form-group">
+                    <label class="font-weight-bold"></label>
+                    <textarea id="text" class="form-control" rows="5" placeholder="Write a comment..."></textarea>
+                </div>
+                <div class="row justify-content-center">
+                    <input id="button" type="submit" class="btn btn-primary" value="Leave a comment" />
+                </div>
+            </form>
+        }
+
+    </div>
+
+    <div class="modal fade" id="modalCenter" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-exclamation-triangle fa-lg" style="color: crimson"></i> Are you sure?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    This process cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                    <button id="deleteBtn" type="button" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.card -->
+
+</div>
+
+<!-- /.container -->
+
+@section Scripts {
+    <script>
+        function VotingStars(averageVote) {
+            if (averageVote == 0) {
+                for (let i = 1; i <= 5; i++) {
+                    $("#voteStars").append(`<i class="far fa-star fa-lg" data-vote="${i}" style="color: yellow"></i>`);
+                }
+            }
+            else {
+                var fullStars = Math.floor(averageVote);
+                var halfStar = averageVote - fullStars > 0;
+                var emptyStars = halfStar ? 5 - (fullStars + 1) : 5 - fullStars;
+
+                for (let i = 1; i <= fullStars; i++) {
+                    $("#voteStars").append(`<i class="fas fa-star fa-lg" data-vote="${i}" style="color: yellow"></i>`);
+                }
+
+                if (halfStar) {
+                    $("#voteStars").append(`<i class="fas fa-star-half-alt fa-lg" data-vote="${fullStars + 1}" style="color: yellow"></i>`);
+                }
+
+                for (let i = 5 - emptyStars + 1; i <= 5; i++) {
+                    $("#voteStars").append(`<i class="far fa-star fa-lg" data-vote="${i}" style="color: yellow"></i>`);
+                }
+            }
+        }
+    </script>
+
+    <script>
+        $("#button").click(function () {
+            event.preventDefault();
+            var antiForgeryToken = $("form input[name=__RequestVerificationToken]").val();
+            $.ajax({
+                type: "POST",
+                url: "/api/Comments",
+                data: JSON.stringify({ recipeId: @Model.Id, text: $("#text").val() }),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRF-TOKEN": antiForgeryToken
+                },
+                success: function (response) {
+                    $("#comments").append(`<p>${response.text}</p><small class="text-muted"><i class="fas fa-user-circle fa-lg"></i> ${response.userUserName} now</small><hr>`);
+                    $("#text").val('');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $("#voteStars").on("click", "i[data-vote]", function () {
+            var antiForgeryToken = $("form input[name=__RequestVerificationToken]").val();
+            $.ajax({
+                type: "POST",
+                url: "/api/Votes",
+                data: JSON.stringify({ recipeId: @Model.Id, value: $(this).attr("data-vote") }),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRF-TOKEN": antiForgeryToken
+                },
+                success: function (response) {
+                    $("#averageVote").html(response.averageVote.toFixed(1));
+
+                    $("#voteStars").children("i").remove();
+
+                    var averageVote = response.averageVote;
+
+                    VotingStars(averageVote);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(function () {
+            var averageVote = @Model.AverageVote;
+
+            VotingStars(averageVote);
+       });
+    </script>
+
+    <script>
+        $("#deleteBtn").click(function() {
+            $("#deleteForm").submit();
+        });
+    </script>
+}

@@ -1,0 +1,36 @@
+﻿@model FoodSpot.Web.ViewModels.Recipes.RecipeListViewModel
+
+@{
+    this.ViewData["Title"] = "Result";
+}
+
+@if (!Model.Recipes.Any())
+{
+    <div class="display-4 text-center">Nothing found.</div>
+}
+else
+{
+    <div class="display-4 text-center mb-3">@Model.Recipes.Count() @(Model.Recipes.Count() == 1 ? "recipe" : "recipes") found</div>
+    <hr />
+    <div class="row text-center">
+        @foreach (var recipe in Model.Recipes)
+        {
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <img class="card-img-top" src="~/images/@recipe.Image"
+                         asp-append-version="true" alt="@recipe.Name">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <img src="~/images/@recipe.CategoryImage" style="width:30px; height:auto" /> @recipe.Name
+                        </h4>
+                        <p class="card-text">@recipe.Instructions</p>
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-primary btn-lg" asp-controller="Recipes" asp-action="Recipe" asp-route-id="@recipe.Id">See more</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
