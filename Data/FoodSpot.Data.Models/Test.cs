@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FoodSpot.Data.Models
+﻿namespace FoodSpot.Data.Models
 {
-    class Test
+    public class Test
     {
     }
 }
