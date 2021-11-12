@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodSpot.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211007101323_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20211110134530_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
